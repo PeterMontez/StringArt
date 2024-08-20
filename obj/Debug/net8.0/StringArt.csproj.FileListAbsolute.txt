@@ -1,0 +1,15 @@
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.AssemblyInfoInputs.cache
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.AssemblyInfo.cs
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.csproj.CoreCompileInputs.cache
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.sourcelink.json
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\bin\Debug\net8.0\StringArt.exe
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\bin\Debug\net8.0\StringArt.deps.json
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\bin\Debug\net8.0\StringArt.runtimeconfig.json
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\bin\Debug\net8.0\StringArt.dll
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\bin\Debug\net8.0\StringArt.pdb
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.dll
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\refint\StringArt.dll
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.pdb
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.genruntimeconfig.cache
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\ref\StringArt.dll
