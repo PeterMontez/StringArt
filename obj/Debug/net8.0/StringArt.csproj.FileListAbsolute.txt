@@ -13,3 +13,8 @@ C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\refint\Stri
 C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.pdb
 C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.genruntimeconfig.cache
 C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\ref\StringArt.dll
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.csproj.AssemblyReference.cache
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\bin\Debug\net8.0\System.Drawing.Common.dll
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\bin\Debug\net8.0\runtimes\win\lib\net8.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\peter\OneDrive\Área de Trabalho\StringArt\obj\Debug\net8.0\StringArt.csproj.Up2Date

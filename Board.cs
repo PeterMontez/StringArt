@@ -4,7 +4,7 @@ public class Board
 {
     public PointD[] nails { get; set; }
     public int nailAmount { get; set; }
-    private Stringer stringer { get; set }
+    private Stringer stringer { get; set; }
     public int[] imageSize { get; set; }
 
     public Board(int[] imageSize, int nailAmount)
@@ -33,7 +33,7 @@ public class Board
 
     public void Draw(int rounds, double opacity, byte[] byteArr)
     {
-        this.stringer = new Stringer(imageSize, nailAmount, nails, rounds, opacity, nails, byteArr)
+        this.stringer = new Stringer(imageSize, nailAmount, rounds, opacity, byteArr, nails);
         stringer.Draw();
     }
 }
