@@ -23,9 +23,9 @@ public class Stringer
         this.Path = new int[Rounds+1];
     }
 
-    public void Draw()
+    public void Draw(int skip)
     {
-        int[] firstPath = FindFirstPath();
+        int[] firstPath = FindFirstPath(skip);
         Path[0] = firstPath[0];
         Path[1] = firstPath[1];
 
@@ -33,12 +33,12 @@ public class Stringer
         int last = firstPath[1];
         for (int i = 0; i < Rounds; i++)
         {
-            FindPath(last);
-
+            last = FindPath(last, skip);
+            System.Console.WriteLine(last);
         }
     }
 
-    private int[] FindFirstPath()
+    private int[] FindFirstPath(int skip)
     {
         double highest = 0;
         int[] path = [0, 0];
@@ -67,7 +67,7 @@ public class Stringer
     }
 
 
-    private int FindPath(int start)
+    private int FindPath(int start, int skip)
     {
         double highest = 0;
         int path = 0;

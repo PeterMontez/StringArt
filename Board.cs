@@ -17,6 +17,7 @@ public class Board
     private PointD[] GetNailCoords(int[] imageSize, int nailAmount)
     {
         double radius = imageSize[0] < imageSize[1] ? imageSize[0] : imageSize[1];
+        radius /= 2;
         PointD[] coords = new PointD[nailAmount];
 
         for (int i = 0; i < nailAmount; i++)
@@ -31,9 +32,9 @@ public class Board
         return coords;
     }
 
-    public void Draw(int rounds, double opacity, byte[] byteArr)
+    public void Draw(int rounds, double opacity, int skip, byte[] byteArr)
     {
         this.stringer = new Stringer(imageSize, nailAmount, rounds, opacity, byteArr, nails);
-        stringer.Draw();
+        stringer.Draw(skip);
     }
 }
