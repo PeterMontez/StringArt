@@ -31,9 +31,9 @@ public class Board
         return coords;
     }
 
-    public void Draw(int rounds, double opacity)
+    public void Draw(int rounds, double opacity, byte[] byteArr)
     {
-        this.stringer = new Stringer(imageSize, nailAmount, rounds, opacity)
+        this.stringer = new Stringer(imageSize, nailAmount, nails, rounds, opacity, nails, byteArr)
         stringer.Draw();
     }
 }
