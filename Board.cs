@@ -18,6 +18,7 @@ public class Board
     {
         double radius = imageSize[0] < imageSize[1] ? imageSize[0] : imageSize[1];
         radius /= 2;
+        radius -= 2;
         PointD[] coords = new PointD[nailAmount];
 
         for (int i = 0; i < nailAmount; i++)

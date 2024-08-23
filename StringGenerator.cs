@@ -25,22 +25,37 @@ public class Stringer
 
     public void Draw(int skip)
     {
+        SVGMaker maker = new SVGMaker(ImageSize);
+        maker.Create();
+
+        PointD[] finalPoints = new PointD[Rounds+2];
+
         int[] firstPath = FindFirstPath(skip);
         Path[0] = firstPath[0];
         Path[1] = firstPath[1];
 
+        finalPoints[0] = Nails[Path[0]];
+        finalPoints[1] = Nails[Path[1]];
 
+        int previous = firstPath[0];
         int last = firstPath[1];
         for (int i = 0; i < Rounds; i++)
         {
-            last = FindPath(last, skip);
+            int temp = last;
+            last = FindPath(last, previous, skip);
+            previous = temp;
             System.Console.WriteLine(last);
+            finalPoints[i+2] = Nails[last];
         }
+
+        maker.NewLine(finalPoints);
+        maker.Save("C:/Users/peter/OneDrive/Área de Trabalho/StringArt/img/test1.svg");
+        ImgProcess.ArrToBmp(ByteArr, ImageSize);
     }
 
     private int[] FindFirstPath(int skip)
     {
-        double highest = 0;
+        double lowest = 255;
         int[] path = [0, 0];
 
         for (int i = 0; i < NailAmount; i++)
@@ -52,11 +67,12 @@ public class Stringer
                 foreach (var item in getLine(Nails[i], Nails[j]))
                 {
                     sum += byteValueByCoord(item.Item1, item.Item2) * item.Item3;
+                    count++;
                 }
                 sum /= count;
-                if (sum > highest)
+                if (sum < lowest)
                 {
-                    highest = sum;
+                    lowest = sum;
                     path = [i, j];
                 }
             }
@@ -67,14 +83,14 @@ public class Stringer
     }
 
 
-    private int FindPath(int start, int skip)
+    private int FindPath(int start, int previous, int skip)
     {
-        double highest = 0;
+        double lowest = 255;
         int path = 0;
 
         for (int i = 0; i < NailAmount; i++)
         {
-            if (i == start)
+            if (i == start || i == previous)
             {
                 continue;
             }
@@ -84,11 +100,12 @@ public class Stringer
             foreach (var item in getLine(Nails[start], Nails[i]))
             {
                 sum += byteValueByCoord(item.Item1, item.Item2) * item.Item3;
+                count++;
             }
             sum /= count;
-            if (sum > highest)
+            if (sum < lowest && (Math.Abs(i - start) > skip))
             {
-                highest = sum;
+                lowest = sum;
                 path = i;
             }
         }
@@ -102,14 +119,14 @@ public class Stringer
         foreach (var item in getLine(Nails[start], Nails[end]))
         {
             byte crr = ByteArr[byteIndexByCoord(item.Item1, item.Item2)];
-            crr = (byte)(crr - (255 * item.Item3) < 0 ? 0 : crr - (255 * item.Item3));
+            crr = (byte)((crr + (item.Item3 * 255) > 255) ? 255 : (crr + (item.Item3 * 255)));
             ByteArr[byteIndexByCoord(item.Item1, item.Item2)] = crr;
         } 
     }
 
     private byte byteValueByCoord(int x, int y)
     {
-        return ByteArr[(y * ImageSize[0]) + x];
+        return ByteArr[((y-1) * ImageSize[0]) + x];
     }
 
     private int byteIndexByCoord(int x, int y)
@@ -117,8 +134,10 @@ public class Stringer
         return (y * ImageSize[0]) + x;
     }
 
-    private List<Tuple<int, int, double>> getLine(PointD p1, PointD p2)
+    private List<Tuple<int, int, double>> getLine(PointD P1, PointD P2)
     {
+        PointD p1 = new PointD(P1.X, P1.Y);
+        PointD p2 = new PointD(P2.X, P2.Y);
         List<Tuple<int, int, double>> pixels = new List<Tuple<int, int, double>>();
 
         bool steep = Math.Abs(p2.Y - p1.Y) > Math.Abs(p2.X - p1.X);
