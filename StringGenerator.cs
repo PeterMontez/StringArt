@@ -20,7 +20,7 @@ public class Stringer
         this.Opacity = opacity;
         this.Nails = nails;
         this.ByteArr = byteArr;
-        this.Path = new int[Rounds+1];
+        this.Path = new int[Rounds+2];
     }
 
     public void Draw(int skip)
@@ -46,6 +46,7 @@ public class Stringer
             previous = temp;
             System.Console.WriteLine(last);
             finalPoints[i+2] = Nails[last];
+            Path[i+2] = last;
         }
 
         maker.NewLine(finalPoints);

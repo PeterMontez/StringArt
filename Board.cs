@@ -38,4 +38,9 @@ public class Board
         this.stringer = new Stringer(imageSize, nailAmount, rounds, opacity, byteArr, nails);
         stringer.Draw(skip);
     }
+
+    public void GenerateTXT(string filePath, int separation)
+    {
+        TXTWriter.Writer(filePath, stringer.Path, separation);
+    }
 }
