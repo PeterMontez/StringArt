@@ -6,12 +6,14 @@ public class Board
     public int nailAmount { get; set; }
     private Stringer stringer { get; set; }
     public int[] imageSize { get; set; }
+    public int Diameter { get; set; }
 
-    public Board(int[] imageSize, int nailAmount)
+    public Board(int[] imageSize, int nailAmount, int diameter)
     {
         this.nails = GetNailCoords(imageSize, nailAmount);
         this.imageSize = imageSize;
         this.nailAmount = nailAmount;
+        this.Diameter = diameter;
     }
 
     private PointD[] GetNailCoords(int[] imageSize, int nailAmount)
@@ -33,10 +35,10 @@ public class Board
         return coords;
     }
 
-    public void Draw(int rounds, double opacity, int skip, byte[] byteArr)
+    public void Draw(int rounds, double opacity, int skip, double thickness, byte[] byteArr)
     {
         this.stringer = new Stringer(imageSize, nailAmount, rounds, opacity, byteArr, nails);
-        stringer.Draw(skip);
+        stringer.Draw(skip, thickness, Diameter);
     }
 
     public void GenerateTXT(string filePath, int separation)

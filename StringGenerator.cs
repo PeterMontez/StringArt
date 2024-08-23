@@ -23,9 +23,9 @@ public class Stringer
         this.Path = new int[Rounds+2];
     }
 
-    public void Draw(int skip)
+    public void Draw(int skip, double thickness, int diameter)
     {
-        SVGMaker maker = new SVGMaker(ImageSize);
+        SVGMaker maker = new SVGMaker(ImageSize, thickness, diameter);
         maker.Create();
 
         PointD[] finalPoints = new PointD[Rounds+2];
@@ -50,6 +50,7 @@ public class Stringer
         }
 
         maker.NewLine(finalPoints);
+        maker.Close();
         maker.Save("C:/Users/peter/OneDrive/Área de Trabalho/StringArt/img/test1.svg");
         ImgProcess.ArrToBmp(ByteArr, ImageSize);
     }
@@ -120,7 +121,7 @@ public class Stringer
         foreach (var item in getLine(Nails[start], Nails[end]))
         {
             byte crr = ByteArr[byteIndexByCoord(item.Item1, item.Item2)];
-            crr = (byte)((crr + (item.Item3 * 255) > 255) ? 255 : (crr + (item.Item3 * 255)));
+            crr = (byte)((crr + (item.Item3 * (255 * Opacity)) > 255) ? 255 : (crr + (item.Item3 * (255 * Opacity))));
             ByteArr[byteIndexByCoord(item.Item1, item.Item2)] = crr;
         } 
     }
