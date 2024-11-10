@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using Microsoft.VisualBasic;
 
 public class Stringer
 {
@@ -11,6 +12,7 @@ public class Stringer
     public PointD[] Nails { get; set; }
     public byte[] ByteArr { get; set; }
     public int[] Path { get; set; }
+    public double WireLength { get; set; }
 
     public Stringer(int[] imageSize, int nailAmount, int rounds, double opacity, byte[] byteArr, PointD[] nails)
     {
@@ -20,7 +22,7 @@ public class Stringer
         this.Opacity = opacity;
         this.Nails = nails;
         this.ByteArr = byteArr;
-        this.Path = new int[Rounds+2];
+        this.Path = new int[Rounds + 2];
     }
 
     public void Draw(int skip, double thickness, int diameter)
@@ -28,7 +30,7 @@ public class Stringer
         SVGMaker maker = new SVGMaker(ImageSize, thickness, diameter);
         maker.Create();
 
-        PointD[] finalPoints = new PointD[Rounds+2];
+        PointD[] finalPoints = new PointD[Rounds + 2];
 
         int[] firstPath = FindFirstPath(skip);
         Path[0] = firstPath[0];
@@ -39,19 +41,23 @@ public class Stringer
 
         int previous = firstPath[0];
         int last = firstPath[1];
+
+        WireLength += GetDistance(Nails[previous], Nails[last]);
+
         for (int i = 0; i < Rounds; i++)
         {
             int temp = last;
             last = FindPath(last, previous, skip);
             previous = temp;
-            System.Console.WriteLine(last);
-            finalPoints[i+2] = Nails[last];
-            Path[i+2] = last;
+            System.Console.WriteLine($"Path {i}: {last}");
+            finalPoints[i + 2] = Nails[last];
+            Path[i + 2] = last;
+            WireLength += GetDistance(Nails[previous], Nails[last]);
         }
 
         maker.NewLine(finalPoints);
         maker.Close();
-        maker.Save("C:/Users/peter/OneDrive/Área de Trabalho/StringArt/img/test1.svg");
+        maker.Save("C:/Users/peter/OneDrive/Imagens/StringArtImg/draw.svg");
         ImgProcess.ArrToBmp(ByteArr, ImageSize);
     }
 
@@ -123,12 +129,26 @@ public class Stringer
             byte crr = ByteArr[byteIndexByCoord(item.Item1, item.Item2)];
             crr = (byte)((crr + (item.Item3 * (255 * Opacity)) > 255) ? 255 : (crr + (item.Item3 * (255 * Opacity))));
             ByteArr[byteIndexByCoord(item.Item1, item.Item2)] = crr;
-        } 
+        }
+    }
+
+    private double GetDistance(PointD p1, PointD p2)
+    {
+        double deltaX = p2.X - p1.X;
+        double deltaY = p2.Y - p1.Y;
+        return Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+    }
+
+    public void Info(int diameter)
+    {
+        double imgDiameter = ImageSize[0] < ImageSize[1] ? ImageSize[0] : ImageSize[1];
+        imgDiameter -= 4;
+        System.Console.WriteLine($"String length: {WireLength * diameter / imgDiameter/1000:F2}m");
     }
 
     private byte byteValueByCoord(int x, int y)
     {
-        return ByteArr[((y-1) * ImageSize[0]) + x];
+        return ByteArr[((y - 1) * ImageSize[0]) + x];
     }
 
     private int byteIndexByCoord(int x, int y)
@@ -226,13 +246,6 @@ public class Stringer
         {
             pixels.Add(new Tuple<int, int, double>(x, y, brightness));
         }
-    }
-
-    private void Swap(ref double a, ref double b)
-    {
-        double temp = a;
-        a = b;
-        b = temp;
     }
 
     private double Round(double x)

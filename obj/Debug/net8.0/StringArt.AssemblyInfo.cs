@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StringArt")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+917e3a63876698e1a22368972fd7bf74fb324585")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c76bb50081318fb1463be7bedd9a77d5be551739")]
 [assembly: System.Reflection.AssemblyProductAttribute("StringArt")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StringArt")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

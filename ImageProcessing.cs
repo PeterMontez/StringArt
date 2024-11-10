@@ -6,7 +6,7 @@ public static class ImgProcess
     public static Bitmap ImgToBmp(string imagePath)
     {
         Bitmap image = new Bitmap(imagePath);
-        image.Save("C:/Users/peter/OneDrive/Área de Trabalho/StringArt/img/test.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+        image.Save("C:/Users/peter/OneDrive/Imagens/StringArtImg/tst.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
         return image;
     }
 
@@ -49,7 +49,7 @@ public static class ImgProcess
                 image.SetPixel(x, y, pixelColor);
             }
         }
-        image.Save("C:/Users/peter/OneDrive/Área de Trabalho/StringArt/img/test1.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+        image.Save("C:/Users/peter/OneDrive/Imagens/StringArtImg/after.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
         return image;
     }
 }

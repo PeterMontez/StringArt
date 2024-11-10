@@ -39,6 +39,7 @@ public class Board
     {
         this.stringer = new Stringer(imageSize, nailAmount, rounds, opacity, byteArr, nails);
         stringer.Draw(skip, thickness, Diameter);
+        stringer.Info(Diameter);
     }
 
     public void GenerateTXT(string filePath, int separation)
