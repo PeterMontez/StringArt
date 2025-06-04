@@ -14,7 +14,14 @@ public class Stringer
     public int[] Path { get; set; }
     public double WireLength { get; set; }
 
-    public Stringer(int[] imageSize, int nailAmount, int rounds, double opacity, byte[] byteArr, PointD[] nails)
+    public Stringer(
+        int[] imageSize,
+        int nailAmount,
+        int rounds,
+        double opacity,
+        byte[] byteArr,
+        PointD[] nails
+    )
     {
         this.ImageSize = imageSize;
         this.NailAmount = nailAmount;
@@ -63,62 +70,83 @@ public class Stringer
 
     private int[] FindFirstPath(int skip)
     {
+        object lockObj = new object();
         double lowest = 255;
         int[] path = [0, 0];
 
-        for (int i = 0; i < NailAmount; i++)
-        {
-            for (int j = i + 1; j < NailAmount; j++)
+        Parallel.For(
+            0,
+            NailAmount,
+            i =>
             {
+                for (int j = i + 1; j < NailAmount; j++)
+                {
+                    double sum = 0;
+                    int count = 0;
+                    foreach (var item in getLine(Nails[i], Nails[j]))
+                    {
+                        sum += byteValueByCoord(item.Item1, item.Item2) * item.Item3;
+                        count++;
+                    }
+                    sum /= count;
+
+                    if (sum < lowest)
+                    {
+                        lock (lockObj)
+                        {
+                            if (sum < lowest)
+                            {
+                                lowest = sum;
+                                path = [i, j];
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        clearImage(path[0], path[1]);
+        return path;
+    }
+
+    private int FindPath(int start, int previous, int skip)
+    {
+        object lockObj = new object();
+        double lowest = 255;
+        int path = 0;
+
+        Parallel.For(
+            0,
+            NailAmount,
+            i =>
+            {
+                if (i == start || i == previous || Math.Abs(i - start) <= skip)
+                    return;
+
                 double sum = 0;
                 int count = 0;
-                foreach (var item in getLine(Nails[i], Nails[j]))
+                foreach (var item in getLine(Nails[start], Nails[i]))
                 {
                     sum += byteValueByCoord(item.Item1, item.Item2) * item.Item3;
                     count++;
                 }
                 sum /= count;
+
                 if (sum < lowest)
                 {
-                    lowest = sum;
-                    path = [i, j];
+                    lock (lockObj)
+                    {
+                        if (sum < lowest)
+                        {
+                            lowest = sum;
+                            path = i;
+                        }
+                    }
                 }
             }
-        }
-        clearImage(path[0], path[1]);
+        );
 
-        return path;
-    }
-
-
-    private int FindPath(int start, int previous, int skip)
-    {
-        double lowest = 255;
-        int path = 0;
-
-        for (int i = 0; i < NailAmount; i++)
-        {
-            if (i == start || i == previous)
-            {
-                continue;
-            }
-
-            double sum = 0;
-            int count = 0;
-            foreach (var item in getLine(Nails[start], Nails[i]))
-            {
-                sum += byteValueByCoord(item.Item1, item.Item2) * item.Item3;
-                count++;
-            }
-            sum /= count;
-            if (sum < lowest && (Math.Abs(i - start) > skip))
-            {
-                lowest = sum;
-                path = i;
-            }
-        }
         clearImage(start, path);
-
         return path;
     }
 
@@ -127,7 +155,11 @@ public class Stringer
         foreach (var item in getLine(Nails[start], Nails[end]))
         {
             byte crr = ByteArr[byteIndexByCoord(item.Item1, item.Item2)];
-            crr = (byte)((crr + (item.Item3 * (255 * Opacity)) > 255) ? 255 : (crr + (item.Item3 * (255 * Opacity))));
+            crr = (byte)(
+                (crr + (item.Item3 * (255 * Opacity)) > 255)
+                    ? 255
+                    : (crr + (item.Item3 * (255 * Opacity)))
+            );
             ByteArr[byteIndexByCoord(item.Item1, item.Item2)] = crr;
         }
     }
@@ -143,7 +175,9 @@ public class Stringer
     {
         double imgDiameter = ImageSize[0] < ImageSize[1] ? ImageSize[0] : ImageSize[1];
         imgDiameter -= 4;
-        System.Console.WriteLine($"String length: {WireLength * diameter / imgDiameter/1000:F2}m");
+        System.Console.WriteLine(
+            $"String length: {WireLength * diameter / imgDiameter / 1000:F2}m"
+        );
     }
 
     private byte byteValueByCoord(int x, int y)
