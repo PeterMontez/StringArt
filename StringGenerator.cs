@@ -13,6 +13,8 @@ public class Stringer
     public byte[] ByteArr { get; set; }
     public int[] Path { get; set; }
     public double WireLength { get; set; }
+    private Dictionary<(int, int), List<Tuple<int, int, double>>> lineCache = new();
+
 
     public Stringer(
         int[] imageSize,
