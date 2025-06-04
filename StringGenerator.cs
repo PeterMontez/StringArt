@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using Microsoft.VisualBasic;
@@ -13,8 +14,7 @@ public class Stringer
     public byte[] ByteArr { get; set; }
     public int[] Path { get; set; }
     public double WireLength { get; set; }
-    private Dictionary<(int, int), List<Tuple<int, int, double>>> lineCache = new();
-
+    private ConcurrentDictionary<(int, int), List<Tuple<int, int, double>>> lineCache = new();
 
     public Stringer(
         int[] imageSize,
@@ -38,6 +38,7 @@ public class Stringer
     {
         SVGMaker maker = new SVGMaker(ImageSize, thickness, diameter);
         maker.Create();
+        maker.Save("C:/Users/peter/OneDrive/Imagens/StringArtImg/draw.svg");
 
         PointD[] finalPoints = new PointD[Rounds + 2];
 
@@ -51,22 +52,28 @@ public class Stringer
         int previous = firstPath[0];
         int last = firstPath[1];
 
-        WireLength += GetDistance(Nails[previous], Nails[last]);
+        double[,] distanceMatrix = new double[NailAmount, NailAmount];
+
+        for (int i = 0; i < NailAmount; i++)
+        for (int j = 0; j < NailAmount; j++)
+            distanceMatrix[i, j] = GetDistance(Nails[i], Nails[j]);
+
+        WireLength += distanceMatrix[previous, last];
 
         for (int i = 0; i < Rounds; i++)
         {
             int temp = last;
             last = FindPath(last, previous, skip);
             previous = temp;
-            System.Console.WriteLine($"Path {i}: {last}");
+            // System.Console.WriteLine($"Path {i}: {last}");
             finalPoints[i + 2] = Nails[last];
             Path[i + 2] = last;
-            WireLength += GetDistance(Nails[previous], Nails[last]);
+            WireLength += distanceMatrix[previous, last];
         }
 
         maker.NewLine(finalPoints);
         maker.Close();
-        maker.Save("C:/Users/peter/OneDrive/Imagens/StringArtImg/draw.svg");
+        // maker.Save("C:/Users/peter/OneDrive/Imagens/StringArtImg/draw.svg");
         ImgProcess.ArrToBmp(ByteArr, ImageSize);
     }
 
@@ -85,7 +92,7 @@ public class Stringer
                 {
                     double sum = 0;
                     int count = 0;
-                    foreach (var item in getLine(Nails[i], Nails[j]))
+                    foreach (var item in getLine(Nails[i], Nails[j], i, j))
                     {
                         sum += byteValueByCoord(item.Item1, item.Item2) * item.Item3;
                         count++;
@@ -127,7 +134,7 @@ public class Stringer
 
                 double sum = 0;
                 int count = 0;
-                foreach (var item in getLine(Nails[start], Nails[i]))
+                foreach (var item in getLine(Nails[start], Nails[i], start, i))
                 {
                     sum += byteValueByCoord(item.Item1, item.Item2) * item.Item3;
                     count++;
@@ -152,9 +159,23 @@ public class Stringer
         return path;
     }
 
+    private double GetLineScore(int index1, int index2)
+    {
+        double sum = 0;
+        int count = 0;
+
+        foreach (var item in getLine(Nails[index1], Nails[index2], index1, index2))
+        {
+            sum += byteValueByCoord(item.Item1, item.Item2) * item.Item3;
+            count++;
+        }
+
+        return (count == 0) ? double.MaxValue : sum / count;
+    }
+
     private void clearImage(int start, int end)
     {
-        foreach (var item in getLine(Nails[start], Nails[end]))
+        foreach (var item in getLine(Nails[start], Nails[end], start, end))
         {
             byte crr = ByteArr[byteIndexByCoord(item.Item1, item.Item2)];
             crr = (byte)(
@@ -192,11 +213,20 @@ public class Stringer
         return (y * ImageSize[0]) + x;
     }
 
-    private List<Tuple<int, int, double>> getLine(PointD P1, PointD P2)
+    private List<Tuple<int, int, double>> getLine(PointD P1, PointD P2, int index1, int index2)
     {
+        // Ensure the key is always ordered (smallest first)
+        var key = index1 < index2 ? (index1, index2) : (index2, index1);
+
+        if (lineCache.TryGetValue(key, out var cachedLine))
+        {
+            return cachedLine;
+        }
+
+        // --- Your original line generation logic starts here ---
         PointD p1 = new PointD(P1.X, P1.Y);
         PointD p2 = new PointD(P2.X, P2.Y);
-        List<Tuple<int, int, double>> pixels = new List<Tuple<int, int, double>>();
+        List<Tuple<int, int, double>> pixels = new();
 
         bool steep = Math.Abs(p2.Y - p1.Y) > Math.Abs(p2.X - p1.X);
         if (steep)
@@ -215,10 +245,9 @@ public class Stringer
         double dy = p2.Y - p1.Y;
         double gradient = (dx == 0) ? 1.0 : dy / dx;
 
-        // Handle first endpoint
         double xEnd = Round(p1.X);
         double yEnd = p1.Y + gradient * (xEnd - p1.X);
-        double xGap = 1.0; // Set xGap to 1.0 to ensure full brightness
+        double xGap = 1.0;
         int xPixel1 = (int)xEnd;
         int yPixel1 = (int)Math.Floor(yEnd);
 
@@ -233,12 +262,11 @@ public class Stringer
             Plot(ref pixels, xPixel1, yPixel1 + 1, Fpart(yEnd) * xGap);
         }
 
-        double intery = yEnd + gradient; // first y-intersection for the main loop
+        double intery = yEnd + gradient;
 
-        // Handle second endpoint
         xEnd = Round(p2.X);
         yEnd = p2.Y + gradient * (xEnd - p2.X);
-        xGap = 1.0; // Set xGap to 1.0 to ensure full brightness
+        xGap = 1.0;
         int xPixel2 = (int)xEnd;
         int yPixel2 = (int)Math.Floor(yEnd);
 
@@ -253,7 +281,6 @@ public class Stringer
             Plot(ref pixels, xPixel2, yPixel2 + 1, Fpart(yEnd) * xGap);
         }
 
-        // Main loop
         if (steep)
         {
             for (int x = xPixel1 + 1; x < xPixel2; x++)
@@ -272,7 +299,9 @@ public class Stringer
                 intery += gradient;
             }
         }
+        // --- Line generation ends here ---
 
+        lineCache[key] = pixels;
         return pixels;
     }
 
