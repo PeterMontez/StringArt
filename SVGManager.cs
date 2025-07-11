@@ -19,7 +19,6 @@ public class SVGMaker
     public double GetWidth(double thickness, int diameter)
     {
         double imgDiameter = imageSize[0] < imageSize[1] ? imageSize[0] : imageSize[1];
-        imgDiameter -= 4;
         return imgDiameter * thickness / diameter;
     }
 

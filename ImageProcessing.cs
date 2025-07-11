@@ -27,7 +27,7 @@ public static class ImgProcess
             for (int x = 0; x < width; x++)
             {
                 Color pixelColor = image.GetPixel(x, y);
-                byte brightness = pixelColor.R;
+                byte brightness = (byte)((pixelColor.R + pixelColor.G + pixelColor.B) /3);
                 pixelValues[index++] = brightness;
             }
         }
